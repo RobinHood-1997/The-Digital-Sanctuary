@@ -4,6 +4,8 @@
 
 **The Digital Sanctuary** is a serverless, client-side, peer-to-peer (P2P) virtual co-working space designed for colleagues and friends to focus together in customizable ambient rooms. 
 
+👉 **[Try the Live App Here! (Free)](https://robinhood-1997.github.io/The-Digital-Sanctuary/)**
+
 Built with 100% client-side technologies—**Vanilla JS, Tone.js, and HTML5 Canvas**—it coordinates user rooms, ambient mixers, animated plants, keystroke counters, and synchronized canvas-drawn Post-it notes over encrypted WebRTC data channels.
 
 ---
@@ -56,6 +58,11 @@ The Digital Sanctuary is hardened to be safe for public open-source distribution
 ---
 
 ## 🚀 Getting Started
+
+### Live Demo
+
+You can try the live application instantly in your browser without any setup:
+👉 **[https://robinhood-1997.github.io/The-Digital-Sanctuary/](https://robinhood-1997.github.io/The-Digital-Sanctuary/)**
 
 ### Prerequisites
 
