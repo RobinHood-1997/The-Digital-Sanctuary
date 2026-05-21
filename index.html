@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' wss://*.peerjs.com https://*.peerjs.com stun:stun.l.google.com:19302 stun:stun1.l.google.com:19302 stun:stun2.l.google.com:19302 stun:stun3.l.google.com:19302 stun:stun4.l.google.com:19302 https://boxradio-edge-00.streamafrica.net; img-src 'self' data:; media-src 'self' blob: https://boxradio-edge-00.streamafrica.net;">
+    <title>The Digital Sanctuary — Vibe Coding Space</title>
+    
+    <!-- Google Fonts for premium typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Georgia&family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧘</text></svg>">
+
+    <!-- Tone.js CDN for synthesis audio engine -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    
+    <!-- PeerJS CDN for serverless peer-to-peer data channels -->
+    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="cabin-theme">
+
+    <!-- Entry / Loading screen (Browser interaction gate for audio context) -->
+    <div class="sanctuary-overlay">
+        <div class="sanctuary-entry">
+            <h1 class="sanctuary-title">The Digital Sanctuary</h1>
+            <p class="sanctuary-subtitle">A Vibe Coding Space</p>
+            <button class="sanctuary-btn" id="start-btn">ENTER SANCTUARY</button>
+            <button class="sanctuary-btn secondary-btn" id="overlay-how-to-btn" style="margin-top: 10px; font-size: 0.9rem; padding: 10px 24px;">HOW TO USE & CREDITS</button>
+        </div>
+    </div>
+
+    <!-- Background Drawing Canvas -->
+    <canvas class="sanctuary-canvas" id="vibe-canvas"></canvas>
+
+    <!-- Overlay Workspace Interface -->
+    <div class="app-container">
+        
+        <!-- Left Sidebar: Tools, Pomodoro & Stats -->
+        <aside class="glass-panel left-sidebar collapsed">
+            <button class="panel-toggle-tab left-tab" id="left-sidebar-toggle" aria-label="Toggle Tools Panel">
+                <span>🎛️ TOOLS</span>
+            </button>
+            <div class="sidebar-content">
+                <div>
+                    <h2 class="left-sidebar-title">Sanctuary Tools</h2>
+                    <p class="left-sidebar-desc">Select a theme, mix the ambient background noises, and stay focused in your personal workspace.</p>
+                </div>
+
+                <!-- Pomodoro Focus Widget -->
+                <div class="pomodoro-container">
+                    <div class="pomodoro-timer" id="pomodoro-timer-container">
+                        <svg class="pomodoro-svg" viewBox="0 0 130 130">
+                            <circle class="pomodoro-bg" cx="65" cy="65" r="60"></circle>
+                            <circle class="pomodoro-progress" cx="65" cy="65" r="60"></circle>
+                        </svg>
+                        <div class="pomo-adjusters">
+                            <button class="pomo-adjust-btn up" id="pomo-up" aria-label="Increase duration">▲</button>
+                            <div class="timer-display" id="timer-display">25:00</div>
+                            <button class="pomo-adjust-btn down" id="pomo-down" aria-label="Decrease duration">▼</button>
+                        </div>
+                    </div>
+                    <div class="pomodoro-controls">
+                        <button class="pomo-btn" id="pomo-play">START</button>
+                        <button class="pomo-btn" id="pomo-reset">RESET</button>
+                    </div>
+                </div>
+
+                <!-- Cabin Time of Day Controller (Only active for Cozy Cabin) -->
+                <div class="tod-container" id="tod-control-container" style="display: none;">
+                    <div class="tod-header">Cabin Time Mode</div>
+                    <div class="tod-buttons">
+                        <button class="tod-btn active" data-tod="auto" title="Follow local system time">Auto</button>
+                        <button class="tod-btn" data-tod="sunrise">Sunrise</button>
+                        <button class="tod-btn" data-tod="day">Day</button>
+                        <button class="tod-btn" data-tod="sunset">Sunset</button>
+                        <button class="tod-btn" data-tod="night">Night</button>
+                    </div>
+                </div>
+
+                <!-- Stats Logger -->
+                <div class="stats-container">
+                    <div class="stats-header">Vibe Statistics</div>
+                    <div class="stat-item">
+                        <span class="stat-label">Total Keystrokes</span>
+                        <span class="stat-value" id="stat-keystrokes">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Focus Sessions</span>
+                        <span class="stat-value" id="stat-focustime">0.0m</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Active Ambient Mix</span>
+                        <span class="stat-value" id="stat-activevolume">0%</span>
+                    </div>
+                    <div class="stat-item" id="stat-time-container" style="display: none;">
+                        <span class="stat-label">Cabin Time</span>
+                        <span class="stat-value" id="stat-time">-</span>
+                    </div>
+                </div>
+
+                <div class="sidebar-footer">
+                    <button class="how-to-btn" id="sidebar-how-to-btn">❓ How to Use & Credits</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Right Sidebar: Markdown Notepad & Scratchpad -->
+        <aside class="glass-panel right-sidebar collapsed">
+            <button class="panel-toggle-tab right-tab" id="right-sidebar-toggle" aria-label="Toggle Notes Panel">
+                <span>📝 NOTES</span>
+            </button>
+            <div class="sidebar-content">
+                <!-- Scratchpad Section -->
+                <div class="sidebar-section">
+                    <div class="scratchpad-header">
+                        <div>
+                            <h3 class="scratchpad-title">Workspace Notes</h3>
+                            <div class="scratchpad-desc">Saves automatically as you type</div>
+                        </div>
+                    </div>
+                    <textarea class="scratchpad-area" id="scratchpad" placeholder="// Plan your project, paste code, or jot down thoughts here..."></textarea>
+                </div>
+                
+                <div class="sidebar-divider"></div>
+
+                <!-- Sticky Notes Manager Section -->
+                <div class="sidebar-section">
+                    <div class="sticky-notes-header">
+                        <h3 class="scratchpad-title">Sticky Notes</h3>
+                        <button class="add-sticky-btn" id="add-sticky-btn" aria-label="Create New Sticky Note">+ Add Sticky</button>
+                    </div>
+                    <div class="sticky-notes-list" id="sticky-notes-list">
+                        <!-- Dynamically populated note cards -->
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Bottom Deck: Audio Mix & Theme Controls -->
+        <footer class="glass-panel bottom-controls collapsed">
+            <button class="panel-toggle-tab bottom-tab" id="bottom-controls-toggle" aria-label="Toggle Mixer & Themes">
+                <span>🎵 MIXER & THEMES 🎚️</span>
+            </button>
+            <!-- Theme Selectors -->
+            <div class="theme-selector">
+                <button class="theme-btn active" data-theme="cabin">Cozy Cabin</button>
+                <button class="theme-btn" data-theme="cyberpunk">Cyberpunk Cafe</button>
+                <button class="theme-btn" data-theme="ocean">Ocean Depths</button>
+            </div>
+
+            <!-- Synthesizer Volume Sliders -->
+            <div class="sliders-grid">
+                <div class="slider-container">
+                    <span class="slider-label">Rain</span>
+                    <input type="range" class="sanctuary-slider" id="vol-rain" min="-60" max="0" value="-30">
+                </div>
+                <div class="slider-container">
+                    <span class="slider-label">Thunder</span>
+                    <input type="range" class="sanctuary-slider" id="vol-thunder" min="-60" max="0" value="-50">
+                </div>
+                <div class="slider-container">
+                    <span class="slider-label">Waves</span>
+                    <input type="range" class="sanctuary-slider" id="vol-waves" min="-60" max="0" value="-60">
+                </div>
+                <div class="slider-container">
+                    <span class="slider-label">Crackle</span>
+                    <input type="range" class="sanctuary-slider" id="vol-crackle" min="-60" max="0" value="-25">
+                </div>
+                <div class="slider-container">
+                    <span class="slider-label">Wind</span>
+                    <input type="range" class="sanctuary-slider" id="vol-wind" min="-60" max="0" value="-60">
+                </div>
+                <div class="slider-container">
+                    <span class="slider-label">Tape</span>
+                    <input type="range" class="sanctuary-slider" id="vol-tape" min="-60" max="0" value="-60">
+                </div>
+                <div class="slider-container">
+                    <span class="slider-label">Melody</span>
+                    <input type="range" class="sanctuary-slider" id="vol-music" min="-60" max="0" value="-60">
+                    <div class="music-source-toggle">
+                        <button class="music-source-btn active" id="music-src-synth" data-source="synth">Synth</button>
+                        <button class="music-source-btn" id="music-src-radio" data-source="radio">Radio</button>
+                    </div>
+                    <div class="music-visualizer" id="music-visualizer">
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Toggles and Actions -->
+            <div class="utility-row">
+                <div class="toggle-container">
+                    <span>Clicks</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="keyboard-clicks-toggle" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="profile-container">
+                    <div class="click-profile-select">
+                        <button class="profile-btn active" data-profile="thock">Thock</button>
+                        <button class="profile-btn" data-profile="blue">Clicky</button>
+                        <button class="profile-btn" data-profile="typewriter">Typewriter</button>
+                        <button class="profile-btn" data-profile="bubble">Bubble</button>
+                    </div>
+                </div>
+                
+                <button class="share-btn" id="share-btn">
+                    Share Vibe Setup
+                </button>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Subtle popup notification -->
+    <div class="toast-msg" id="toast">Vibe link copied to clipboard!</div>
+
+    <!-- Note Modal (Glassmorphic center overlay) -->
+    <div class="sanctuary-modal-backdrop" id="note-modal" style="display: none;">
+        <div class="sanctuary-modal-card">
+            <button class="modal-close-btn" id="note-modal-close" aria-label="Close modal">×</button>
+            <h3 class="modal-title" id="note-modal-title">Edit Sticky Note</h3>
+            
+            <div class="modal-body">
+                <textarea class="modal-textarea" id="note-modal-text" placeholder="Write your note here..." maxlength="200"></textarea>
+                <div class="char-counter"><span id="note-char-count">0</span>/200</div>
+                
+                <div class="note-options-container" id="note-options-container">
+                    <div class="option-group">
+                        <label class="option-label">Category Tag:</label>
+                        <select class="sanctuary-select" id="note-modal-tag">
+                            <option value="General">General</option>
+                            <option value="Work">Work</option>
+                            <option value="Study">Study</option>
+                            <option value="Personal">Personal</option>
+                            <option value="Ideas">Ideas</option>
+                        </select>
+                        <span style="font-size: 0.8rem; color: rgba(255,255,255,0.4); margin: 0 5px;">or</span>
+                        <input type="text" class="sanctuary-input" id="note-modal-custom-tag" placeholder="Custom Tag" maxlength="15">
+                    </div>
+                    
+                    <div class="option-group">
+                        <label class="option-label">Tag Color:</label>
+                        <div class="color-palette" id="note-modal-colors">
+                            <button class="color-dot active" data-color="yellow" style="background-color: #facc15;" title="Yellow (General)"></button>
+                            <button class="color-dot" data-color="blue" style="background-color: #60a5fa;" title="Blue (Work)"></button>
+                            <button class="color-dot" data-color="red" style="background-color: #f87171;" title="Red (Study)"></button>
+                            <button class="color-dot" data-color="orange" style="background-color: #fb923c;" title="Orange (Personal)"></button>
+                            <button class="color-dot" data-color="purple" style="background-color: #c084fc;" title="Purple (Ideas)"></button>
+                            <button class="color-dot" data-color="green" style="background-color: #34d399;" title="Green"></button>
+                            <button class="color-dot" data-color="pink" style="background-color: #f472b6;" title="Pink"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer" id="note-modal-footer">
+                <button class="modal-btn delete-btn" id="note-modal-delete">Delete</button>
+                <button class="modal-btn save-btn" id="note-modal-save">Save Note</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- How To Use & Credits Modal -->
+    <div class="sanctuary-modal-backdrop" id="how-to-modal" style="display: none;">
+        <div class="sanctuary-modal-card large-modal">
+            <button class="modal-close-btn" id="how-to-modal-close" aria-label="Close modal">×</button>
+            <h3 class="modal-title">🧘 About The Digital Sanctuary</h3>
+            
+            <div class="modal-body scrollable-modal-body">
+                <section class="how-to-section">
+                    <h4>✨ What is this project?</h4>
+                    <p>
+                        <strong>The Digital Sanctuary</strong> is a premium, collaborative, peer-to-peer virtual co-working space designed for friends, colleagues, and remote focus sessions. Combining ambient sound synthesis (via Tone.js) with a real-time collaborative HTML5 Canvas, it allows you to build your own focused cabin, cyberpunk workspace, or ocean sanctuary.
+                    </p>
+                </section>
+
+                <section class="how-to-section">
+                    <h4>🛠️ Key Features & How to Use</h4>
+                    <ul>
+                        <li><strong>Ambient Sound Mixer:</strong> Toggle and mix the volume sliders in the bottom panel to synthesize Rain, Thunder, Waves, Fire Crackle, Wind, or Tape Hiss. You can also switch between ambient Synthesizer melodies and live Lofi Radio.</li>
+                        <li><strong>Pomodoro Timer:</strong> Adjust the focus duration by hovering over the circular timer and clicking the arrows (▲/▼). Click START to focus and RESET to start over.</li>
+                        <li><strong>Room Collaboration:</strong> Click <strong>Share Vibe Setup</strong> at the bottom to copy your room's secure invite link. When colleagues join, their rooms will snap side-by-side with yours on the Canvas!</li>
+                        <li><strong>Sticky Notes:</strong> Double-click any empty glass partition on the Canvas to create a new sticky note. Write your text, select a category tag (Work, Study, Personal, etc.), and pick your tag color!</li>
+                        <li><strong>Sticky Note Management:</strong> Move notes by dragging them across partition boundaries. Click or double-click any note (or note card in the right sidebar) to read it zoomed-in. Owners can edit and delete, while guests view in read-only mode.</li>
+                    </ul>
+                </section>
+
+                <section class="how-to-section">
+                    <h4>🔒 Safe & Open Source</h4>
+                    <p>
+                        This project is 100% serverless, private, and peer-to-peer. Your notes, ambient mixes, and keyboard actions are sent directly to your peers using encrypted WebRTC data channels. All inputs are strictly sanitized to prevent malicious injections.
+                    </p>
+                </section>
+
+                <section class="how-to-section credits-section">
+                    <h4>🙏 Credits & Reference Links</h4>
+                    <p>We are grateful to the open-source projects and assets that made this project possible:</p>
+                    <ul>
+                        <li><a href="https://tonejs.github.io/" target="_blank" rel="noopener">Tone.js</a> — Audio synthesis and Web Audio scheduling framework.</li>
+                        <li><a href="https://peerjs.com/" target="_blank" rel="noopener">PeerJS</a> — Simplified WebRTC peer-to-peer data connections.</li>
+                        <li><a href="https://fonts.google.com/" target="_blank" rel="noopener">Google Fonts</a> — Outfit, Inter, and Georgia typography.</li>
+                        <li><a href="https://github.com/goldfire/howler.js/" target="_blank" rel="noopener">W3C Web Audio APIs</a> — W3C Web Audio APIs.</li>
+                    </ul>
+                </section>
+            </div>
+            
+            <div class="modal-footer text-center">
+                <button class="modal-btn save-btn" id="how-to-modal-ok">Got it!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Script (ES Module loader) -->
+    <script type="module" src="app.js"></script>
+
+</body>
+</html>
