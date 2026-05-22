@@ -941,42 +941,181 @@ body.ocean-theme {
 /* Responsiveness */
 @media (max-width: 1024px) {
     .app-container {
-        display: flex;
-        flex-direction: column;
-        height: 100vh;
-        overflow-y: auto;
-        pointer-events: auto;
-    }
-    .left-sidebar, .right-sidebar {
         position: relative;
-        top: auto;
-        left: auto;
-        right: auto;
-        bottom: auto;
         width: 100%;
+        height: 100%;
+        overflow: hidden;
+        pointer-events: none;
+    }
+    
+    .left-sidebar {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        bottom: 12px;
+        width: 290px;
+        max-width: 80vw;
         height: auto;
-        margin-bottom: 20px;
-        animation: none !important;
-        transform: none !important;
-        opacity: 1 !important;
+        margin: 0;
+        z-index: 10;
+        transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease;
     }
+    
+    .left-sidebar.collapsed {
+        transform: translateX(calc(-100% - 12px)) !important;
+    }
+    
+    .right-sidebar {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        bottom: 12px;
+        width: 290px;
+        max-width: 80vw;
+        height: auto;
+        margin: 0;
+        z-index: 10;
+        transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease;
+    }
+    
+    .right-sidebar.collapsed {
+        transform: translateX(calc(100% + 12px)) !important;
+    }
+    
     .bottom-controls {
-        position: relative;
-        left: auto;
-        transform: none !important;
-        bottom: auto;
-        margin: 20px auto;
-        width: calc(100% - 48px);
-        opacity: 1 !important;
+        position: absolute;
+        bottom: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: calc(100% - 24px);
+        max-width: 480px;
+        margin: 0;
+        z-index: 10;
+        padding: 12px 20px;
+        transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease;
     }
+    
+    .bottom-controls.collapsed {
+        transform: translate(-50%, calc(100% + 12px)) !important;
+    }
+    
     .panel-toggle-tab {
-        display: none !important;
+        display: flex !important;
+        padding: 16px 6px !important;
+        font-size: 0.7rem !important;
+        letter-spacing: 0.1em !important;
     }
+    
+    .left-tab {
+        padding: 16px 8px !important;
+        border-radius: 0 8px 8px 0 !important;
+    }
+    
+    .right-tab {
+        padding: 16px 8px !important;
+        border-radius: 8px 0 0 8px !important;
+    }
+    
+    .bottom-tab {
+        padding: 8px 16px !important;
+        border-radius: 8px 8px 0 0 !important;
+    }
+    
     .sidebar-content {
-        height: auto !important;
-        overflow: visible !important;
-        margin: 0 !important;
+        height: 100% !important;
+        overflow-y: auto !important;
+        padding: 16px !important;
+    }
+
+    /* Sliders grid adjustments for compact viewports */
+    .sliders-grid {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        gap: 10px 14px !important;
+        width: 100% !important;
+        max-height: 200px;
+        overflow-y: auto;
+        padding-right: 4px;
+    }
+    
+    .sliders-grid::-webkit-scrollbar {
+        width: 4px;
+    }
+    .sliders-grid::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 2px;
+    }
+    
+    .slider-container {
+        gap: 4px !important;
+    }
+    
+    .sanctuary-slider {
+        width: 80px !important;
+    }
+
+    .theme-selector {
+        gap: 8px !important;
+        padding-bottom: 8px !important;
+    }
+
+    .theme-btn {
+        padding: 4px 10px !important;
+        font-size: 0.7rem !important;
+    }
+
+    .utility-row {
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        justify-content: center !important;
+    }
+
+    .click-profile-select {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+    }
+
+    .profile-btn {
+        padding: 4px 6px !important;
+        font-size: 0.6rem !important;
+    }
+
+    .share-btn {
+        padding: 4px 12px !important;
+        font-size: 0.7rem !important;
+    }
+
+    /* Modal adjustments for small viewports */
+    .sanctuary-modal-card {
         padding: 20px !important;
+        gap: 16px !important;
+    }
+
+    .modal-title {
+        font-size: 1.15rem !important;
+    }
+
+    .option-group {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 6px !important;
+    }
+
+    .option-label {
+        width: 100% !important;
+        margin-bottom: 2px;
+    }
+
+    .color-palette {
+        width: 100% !important;
+        justify-content: flex-start !important;
+    }
+    
+    .sanctuary-select, .sanctuary-input {
+        width: 100% !important;
+        box-sizing: border-box;
     }
 }
 

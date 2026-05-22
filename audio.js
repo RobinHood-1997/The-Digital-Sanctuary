@@ -782,8 +782,8 @@ export class AudioEngine {
         }
         if (this.peerChannels[roomId]) return;
 
-        // StereoPanner -> Filter -> Volume -> Destination
-        const panner = new Tone.StereoPanner(0).toDestination();
+        // Panner -> Filter -> Volume -> Destination
+        const panner = new Tone.Panner(0).toDestination();
         const filter = new Tone.Filter({
             type: "lowpass",
             frequency: 350,

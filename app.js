@@ -437,24 +437,44 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 8b. Panel toggle buttons listeners
+    function collapseOthersOnMobile(activePanel) {
+        if (window.innerWidth <= 1024) {
+            if (activePanel !== leftSidebar && leftSidebar) leftSidebar.classList.add('collapsed');
+            if (activePanel !== rightSidebar && rightSidebar) rightSidebar.classList.add('collapsed');
+            if (activePanel !== bottomControls && bottomControls) bottomControls.classList.add('collapsed');
+        }
+    }
+
     if (leftToggle && leftSidebar) {
         leftToggle.addEventListener('click', (e) => {
             e.stopPropagation();
+            const isCollapsed = leftSidebar.classList.contains('collapsed');
             leftSidebar.classList.toggle('collapsed');
+            if (isCollapsed) {
+                collapseOthersOnMobile(leftSidebar);
+            }
             audio.triggerKeyboardClick();
         });
     }
     if (rightToggle && rightSidebar) {
         rightToggle.addEventListener('click', (e) => {
             e.stopPropagation();
+            const isCollapsed = rightSidebar.classList.contains('collapsed');
             rightSidebar.classList.toggle('collapsed');
+            if (isCollapsed) {
+                collapseOthersOnMobile(rightSidebar);
+            }
             audio.triggerKeyboardClick();
         });
     }
     if (bottomToggle && bottomControls) {
         bottomToggle.addEventListener('click', (e) => {
             e.stopPropagation();
+            const isCollapsed = bottomControls.classList.contains('collapsed');
             bottomControls.classList.toggle('collapsed');
+            if (isCollapsed) {
+                collapseOthersOnMobile(bottomControls);
+            }
             audio.triggerKeyboardClick();
         });
     }
